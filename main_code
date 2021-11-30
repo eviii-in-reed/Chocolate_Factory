@@ -1,0 +1,131 @@
+CREATE DATABASE CHOCOLATE_FACTORY;
+USE CHOCOLATE_FACTORY;
+CREATE TABLE EMPLOYEES(emp_id INT Primary key,
+    first_name varchar(50),
+    last_name varchar(50),
+    birth_day DATE,
+    sex varchar(1),
+    salary int,
+    super_id int,
+    branch_id int);
+
+CREATE TABLE PROVIDERS(supplier_id int,
+       provider_name varchar(50),
+	   supply_type varchar(50),
+       mgr_id int);
+       
+CREATE TABLE CLIENTS(client_id int,
+	client_name varchar(50),
+    branch_id int);
+    
+CREATE TABLE SALES(emp_id int, 
+       client_id int,
+       total_sales int);
+       
+CREATE TABLE STORES(store_id int,
+       store_name varchar(50),
+       location varchar(50),
+       name_of_owner varchar(50),
+       mgr_id int);
+       
+ALTER TABLE SALES
+ADD FOREIGN KEY(emp_id) references EMPLOYEES (emp_id); 
+
+ALTER TABLE PROVIDERS
+ADD PRIMARY KEY(mgr_id);
+
+ALTER TABLE PROVIDERS
+DROP PRIMARY KEY;
+
+INSERT INTO EMPLOYEES(emp_id,
+first_name,
+last_name,
+birth_day,
+sex,
+salary,
+super_id,
+branch_id)
+VALUES(1, 'Jonas', 'Calhoun', '1943-04-03', 'M', 167796, 3, 2),
+(2, 'Hayden', 'Nunez', '1944-10-09', 'F', 140681, 3, 3),
+(3, 'Everett', 'Hogan', '1945-12-26', 'M', 238279, 9, 2),
+(4, 'Saniyah', 'Dyer', '1953-10-14', 'M', 84694, 3, 2), 
+(5, 'Cristal', 'Moses', '1956-02-19', 'F', 178010, 9, 2),
+(6, 'Eddie', 'Mercado', '1957-09-22', 'M', 83571, 9, 2),
+(7, 'Ireland', 'Mann', '1959-01-24', 'M', 214053, 3, 3);
+
+INSERT INTO  providers (supplier_id, 
+Provider_name,
+Supply_type, 
+mgr_id)
+VALUES (2, 'Barry Callebeaut', 'chocolate',103),
+(2, 'Keylink Ltd', 'modules', 105),
+(2, 'Vantage House', 'packing',101),
+(3, 'Home chocolate factory','equipment',101),
+(3, 'Hb Ingredients', 'special ingredients',107),
+(3, 'Graphics Direct', 'cocoa butter', 106);
+
+insert into CLIENTS values (400,'Dunmore Highschool',2);
+insert into CLIENTS values (401,'Lackawan Country',2);
+insert into CLIENTS values (402,'Ysl Bakery',3);
+insert into CLIENTS values (403,'Mondelez international',3);
+insert into CLIENTS values (404,'Scranton Whitepages',2);
+insert into CLIENTS values (405,'Love and Cheescake',3);
+insert into CLIENTS values (406,'Tim Hortons',2);
+
+INSERT INTO STORES (store_id, store_name, location, name_of_owner, mgr_id)
+VALUES(501, 'University_treat', 'Sheffield', 'John_Smith', 4),
+(502, 'Annies cocoa bakery', 'London', 'William Taylor', 2),
+(503, 'Cocoa_wonderland', 'Manchester', 'Flora Walaey', 6),
+(504, 'Hotel_chocolate', 'Edinburgh', 'Eric_Stanford', 7),
+(505, 'The_chocolate_bar', 'Glasgow', 'Bob_Stanly', 5);
+
+
+SELECT EMPLOYEES.emp_id
+FROM EMPLOYEES
+INNER JOIN SALES ON SALES.emp_id = EMPLOYEES.emp_id;
+
+
+
+DELETE EMPLOYEES, SALES
+FROM EMPLOYEES
+INNER JOIN SALES ON SALES.emp_id = EMPLOYEES.emp_id;
+
+
+SELECT EMPLOYEES.emp_id, EMPLOYEES. first_name, EMPLOYEES.last_name
+FROM EMPLOYEES
+INNER JOIN SALES ON SALES.emp_id = EMPLOYEES.emp_id;
+
+DELIMITER //
+
+CREATE FUNCTION ClientLevel(
+	 total_sales int
+) 
+RETURNS VARCHAR(20)
+DETERMINISTIC
+BEGIN
+    DECLARE ClientLevel VARCHAR(20);
+
+    IF total_sales > 50000 THEN
+		SET ClientLevel = 'PLATINUM';
+    ELSEIF (total_sales >= 50000 AND 
+			total_sales <= 10000) THEN
+        SET ClientLevel = 'GOLD';
+    ELSEIF total_sales < 10000 THEN
+        SET ClientLevel = 'SILVER';
+    END IF;
+	RETURN (ClientLevel);
+END//
+DELIMITER ;
+
+SELECT EMPLOYEES.emp_id, EMPLOYEES. first_name, EMPLOYEES.last_name
+FROM EMPLOYEES
+LEFT JOIN SALES
+ON EMPLOYEES.emp_id = SALES.emp_id;
+
+/* Query -> Highlight female gender */
+SELECT COUNT emp_id, sex, first_name, last_name
+FROM EMPLOYEES
+WHERE sex='F';
+(SELECT emp_id, salary, sex, first_name, last_name 
+FROM EMPLOYEES 
+WHERE salary = '140681');
