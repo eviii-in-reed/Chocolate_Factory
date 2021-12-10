@@ -79,22 +79,20 @@ VALUES(501, 'University_treat', 'Sheffield', 'John_Smith', 4),
 (504, 'Hotel_chocolate', 'Edinburgh', 'Eric_Stanford', 7),
 (505, 'The_chocolate_bar', 'Glasgow', 'Bob_Stanly', 5);
 
+INSERT INTO SALES(emp_id, client_id, total_sales) 
+VALUES
+(5, 400, 55000),
+(2, 401, 267000), 
+(4, 402, 22500),
+ (7, 403, 5000), 
+ (3, 403, 12000), 
+ (5, 404, 33000), 
+ (7, 405, 26000),
+ (2, 406, 15000), 
+ (5, 406, 130000);
 
-SELECT EMPLOYEES.emp_id
-FROM EMPLOYEES
-INNER JOIN SALES ON SALES.emp_id = EMPLOYEES.emp_id;
 
-
-
-DELETE EMPLOYEES, SALES
-FROM EMPLOYEES
-INNER JOIN SALES ON SALES.emp_id = EMPLOYEES.emp_id;
-
-
-SELECT EMPLOYEES.emp_id, EMPLOYEES. first_name, EMPLOYEES.last_name
-FROM EMPLOYEES
-INNER JOIN SALES ON SALES.emp_id = EMPLOYEES.emp_id;
-
+/* function - level the total sales volumn*/
 DELIMITER //
 
 CREATE FUNCTION ClientLevel(
@@ -107,8 +105,8 @@ BEGIN
 
     IF total_sales > 50000 THEN
 		SET ClientLevel = 'PLATINUM';
-    ELSEIF (total_sales >= 50000 AND 
-			total_sales <= 10000) THEN
+    ELSEIF (total_sales <= 50000 AND 
+			total_sales >= 10000) THEN
         SET ClientLevel = 'GOLD';
     ELSEIF total_sales < 10000 THEN
         SET ClientLevel = 'SILVER';
@@ -117,13 +115,18 @@ BEGIN
 END//
 DELIMITER ;
 
+/*  run the function */
+SELECT chocolate_factory.ClientLevel(49000);
+
+
 SELECT EMPLOYEES.emp_id, EMPLOYEES. first_name, EMPLOYEES.last_name
 FROM EMPLOYEES
 LEFT JOIN SALES
 ON EMPLOYEES.emp_id = SALES.emp_id;
 
-/* Query -> Highlight female gender */
-SELECT COUNT emp_id, sex, first_name, last_name
+
+/* Query & Subquery -> Highlight female gender and select a sepcific person whose salary is 140681*/
+SELECT emp_id, sex, first_name, last_name
 FROM EMPLOYEES
 WHERE sex='F';
 (SELECT emp_id, salary, sex, first_name, last_name 
